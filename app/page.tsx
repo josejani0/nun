@@ -19,42 +19,27 @@ export default function Page() {
   const audioRef = useRef<HTMLAudioElement>(null)
   const fadeRef = useRef<number | null>(null)
 
-  const go = useCallback((next: Stage) => {
-    setPrev(null)
-    setStage(next)
-  }, [])
-
-  const unlockMusic = useCallback(() => {
-    const audio = audioRef.current
-    if (!audio) return
-
-    audio.volume = 0
-    audio.currentTime = 0
-
-    const p = audio.play()
-
-    if (p) {
-      p.catch(() => {})
-    }
-  }, [])
+  const go = useCallback(
+    (next: Stage) => {
+      setPrev(stage)
+      setStage(next)
+      window.setTimeout(() => setPrev(null), 1100)
+    },
+    [stage],
+  )
 
   const startMusic = useCallback(() => {
     const audio = audioRef.current
     if (!audio) return
 
     setMusicOn(true)
+    audio.volume = 0
+    audio.currentTime = 0
 
-    if (audio.paused) {
-      const p = audio.play()
+    const p = audio.play()
+    if (p) p.catch(() => {})
 
-      if (p) {
-        p.catch(() => {})
-      }
-    }
-
-    if (fadeRef.current) {
-      window.clearInterval(fadeRef.current)
-    }
+    if (fadeRef.current) window.clearInterval(fadeRef.current)
 
     const target = 0.55
 
@@ -84,53 +69,84 @@ export default function Page() {
     audio.muted = next
   }, [muted])
 
+  const show = (name: Stage) => stage === name || prev === name
+
   return (
     <main className="relative h-[100dvh] w-full overflow-hidden bg-[var(--burgundy)]">
+      {show('question') && (
+  <div
+    className="stage-layer"
+    style={{
+      opacity: stage === 'question' ? 1 : 0,
+      pointerEvents: stage === 'question' ? 'auto' : 'none',
+    }}
+  >
+    <FlowerQuestion
+      onSubmit={() => go('flowers')}
+      onStartMusic={startMusic}
+    />
+  </div>
+)}
 
-      {stage === 'surprise' && (
-        <div className="stage-layer">
+      {show('flowers') && (
+        <div
+          className="stage-layer"
+          style={{
+            opacity: stage === 'flowers' ? 1 : 0,
+            pointerEvents: stage === 'flowers' ? 'auto' : 'none',
+          }}
+        >
+          <FlowerStage onDone={() => go('letter')} />
+        </div>
+      )}
+
+      {show('surprise') && (
+        <div
+          className="stage-layer"
+          style={{
+            opacity: stage === 'surprise' ? 1 : 0,
+            pointerEvents: stage === 'surprise' ? 'auto' : 'none',
+          }}
+        >
           <SurpriseStage
-            onStartMusic={unlockMusic}
+            onJokesAside={() => {}}
             onDone={() => go('jokes')}
           />
         </div>
       )}
 
-      {stage === 'jokes' && (
-        <div className="stage-layer">
-          <JokesAsideStage
-            onStartMusic={startMusic}
-            onDone={() => go('question')}
-          />
+      {show('jokes') && (
+        <div
+          className="stage-layer"
+          style={{
+            opacity: stage === 'jokes' ? 1 : 0,
+            pointerEvents: stage === 'jokes' ? 'auto' : 'none',
+          }}
+        >
+          <JokesAsideStage onDone={() => go('question')} />
         </div>
       )}
 
-      {stage === 'question' && (
-        <div className="stage-layer">
-          <FlowerQuestion
-            onSubmit={() => go('flowers')}
-          />
+      {show('letter') && (
+        <div
+          className="stage-layer"
+          style={{
+            opacity: stage === 'letter' ? 1 : 0,
+            pointerEvents: stage === 'letter' ? 'auto' : 'none',
+          }}
+        >
+          <LetterStage onDone={() => {}} />
         </div>
       )}
 
-      {stage === 'flowers' && (
-        <div className="stage-layer">
-          <FlowerStage
-            onDone={() => go('letter')}
-          />
-        </div>
-      )}
-
-      {stage === 'letter' && (
-        <div className="stage-layer">
-          <LetterStage
-            onDone={() => go('ending')}
-          />
-        </div>
-      )}
-
-      {stage === 'ending' && (
-        <div className="stage-layer">
+      {show('ending') && (
+        <div
+          className="stage-layer"
+          style={{
+            opacity: stage === 'ending' ? 1 : 0,
+            pointerEvents: stage === 'ending' ? 'auto' : 'none',
+          }}
+        >
           <EndingStage />
         </div>
       )}
