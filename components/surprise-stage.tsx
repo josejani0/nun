@@ -12,10 +12,10 @@ type Poop = {
 }
 
 export function SurpriseStage({
-  onJokesAside,
+  onStartMusic,
   onDone,
 }: {
-  onJokesAside: () => void
+  onStartMusic: () => void
   onDone: () => void
 }) {
   const [clicked, setClicked] = useState(false)
@@ -25,6 +25,7 @@ export function SurpriseStage({
 
   const handleClick = useCallback(() => {
     if (clicked) return
+    onStartMusic()
     setClicked(true)
 
     const count = 100
@@ -53,12 +54,9 @@ export function SurpriseStage({
     // Let the gag play quickly, then move into the serious part.
     window.setTimeout(() => setPoops([]), 2500)
     window.setTimeout(() => {
-      onJokesAside()
-    }, 1950)
-    window.setTimeout(() => {
       onDone()
     }, 4400)
-  }, [clicked, onJokesAside, onDone])
+  }, [clicked, onStartMusic, onDone])
 
   return (
     <div className="burgundy-bg relative flex h-full w-full items-center justify-center overflow-hidden px-6 text-[var(--paper)]">
