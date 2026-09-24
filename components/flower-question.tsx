@@ -25,7 +25,7 @@ export function FlowerQuestion({
     <div className="burgundy-bg relative flex h-full w-full items-center justify-center overflow-hidden px-6">
       <div className="anim-fade-up relative z-10 flex w-full max-w-xl flex-col items-center text-center">
         <h1 className="font-serif text-[2.1rem] font-light italic leading-tight text-[var(--paper)] sm:text-[2.9rem]">
-          Hey , how many flowers
+          How many flowers
           <br />
           would you like?
         </h1>
