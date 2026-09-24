@@ -15,7 +15,7 @@ export function JokesAsideStage({ onDone }: { onDone: () => void }) {
         className="anim-jokes-aside font-serif text-[3rem] font-light italic tracking-wide text-[var(--paper)] sm:text-[4.5rem]"
         style={{ textShadow: '0 4px 30px rgba(0,0,0,0.45)' }}
       >
-        jokes aside.
+        Heyy
       </p>
     </div>
   )
