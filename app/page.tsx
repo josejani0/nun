@@ -19,14 +19,10 @@ export default function Page() {
   const audioRef = useRef<HTMLAudioElement>(null)
   const fadeRef = useRef<number | null>(null)
 
-  const go = useCallback(
-    (next: Stage) => {
-      setPrev(stage)
-      setStage(next)
-      window.setTimeout(() => setPrev(null), 1100)
-    },
-    [stage],
-  )
+  const go = useCallback((next: Stage) => {
+    setPrev(null)
+    setStage(next)
+  }, [])
 
   const unlockMusic = useCallback(() => {
     const audio = audioRef.current
@@ -47,9 +43,6 @@ export default function Page() {
     if (!audio) return
 
     setMusicOn(true)
-
-    audio.currentTime = 0
-    audio.volume = 0
 
     if (audio.paused) {
       const p = audio.play()
@@ -91,19 +84,11 @@ export default function Page() {
     audio.muted = next
   }, [muted])
 
-  const show = (name: Stage) => stage === name || prev === name
-
   return (
     <main className="relative h-[100dvh] w-full overflow-hidden bg-[var(--burgundy)]">
 
-      {show('surprise') && (
-        <div
-          className="stage-layer"
-          style={{
-            opacity: stage === 'surprise' ? 1 : 0,
-            pointerEvents: stage === 'surprise' ? 'auto' : 'none',
-          }}
-        >
+      {stage === 'surprise' && (
+        <div className="stage-layer">
           <SurpriseStage
             onStartMusic={unlockMusic}
             onDone={() => go('jokes')}
@@ -111,14 +96,8 @@ export default function Page() {
         </div>
       )}
 
-      {show('jokes') && (
-        <div
-          className="stage-layer"
-          style={{
-            opacity: stage === 'jokes' ? 1 : 0,
-            pointerEvents: stage === 'jokes' ? 'auto' : 'none',
-          }}
-        >
+      {stage === 'jokes' && (
+        <div className="stage-layer">
           <JokesAsideStage
             onStartMusic={startMusic}
             onDone={() => go('question')}
@@ -126,52 +105,32 @@ export default function Page() {
         </div>
       )}
 
-      {show('question') && (
-        <div
-          className="stage-layer"
-          style={{
-            opacity: stage === 'question' ? 1 : 0,
-            pointerEvents: stage === 'question' ? 'auto' : 'none',
-          }}
-        >
+      {stage === 'question' && (
+        <div className="stage-layer">
           <FlowerQuestion
             onSubmit={() => go('flowers')}
           />
         </div>
       )}
 
-      {show('flowers') && (
-        <div
-          className="stage-layer"
-          style={{
-            opacity: stage === 'flowers' ? 1 : 0,
-            pointerEvents: stage === 'flowers' ? 'auto' : 'none',
-          }}
-        >
-          <FlowerStage onDone={() => go('letter')} />
+      {stage === 'flowers' && (
+        <div className="stage-layer">
+          <FlowerStage
+            onDone={() => go('letter')}
+          />
         </div>
       )}
 
-      {show('letter') && (
-        <div
-          className="stage-layer"
-          style={{
-            opacity: stage === 'letter' ? 1 : 0,
-            pointerEvents: stage === 'letter' ? 'auto' : 'none',
-          }}
-        >
-          <LetterStage onDone={() => go('ending')} />
+      {stage === 'letter' && (
+        <div className="stage-layer">
+          <LetterStage
+            onDone={() => go('ending')}
+          />
         </div>
       )}
 
-      {show('ending') && (
-        <div
-          className="stage-layer"
-          style={{
-            opacity: stage === 'ending' ? 1 : 0,
-            pointerEvents: stage === 'ending' ? 'auto' : 'none',
-          }}
-        >
+      {stage === 'ending' && (
+        <div className="stage-layer">
           <EndingStage />
         </div>
       )}
