@@ -28,18 +28,40 @@ export default function Page() {
     [stage],
   )
 
+  const unlockMusic = useCallback(() => {
+    const audio = audioRef.current
+    if (!audio) return
+
+    audio.volume = 0
+    audio.currentTime = 0
+
+    const p = audio.play()
+
+    if (p) {
+      p.catch(() => {})
+    }
+  }, [])
+
   const startMusic = useCallback(() => {
     const audio = audioRef.current
     if (!audio) return
 
     setMusicOn(true)
-    audio.volume = 0
+
     audio.currentTime = 0
+    audio.volume = 0
 
-    const p = audio.play()
-    if (p) p.catch(() => {})
+    if (audio.paused) {
+      const p = audio.play()
 
-    if (fadeRef.current) window.clearInterval(fadeRef.current)
+      if (p) {
+        p.catch(() => {})
+      }
+    }
+
+    if (fadeRef.current) {
+      window.clearInterval(fadeRef.current)
+    }
 
     const target = 0.55
 
@@ -73,32 +95,6 @@ export default function Page() {
 
   return (
     <main className="relative h-[100dvh] w-full overflow-hidden bg-[var(--burgundy)]">
-      {show('question') && (
-  <div
-    className="stage-layer"
-    style={{
-      opacity: stage === 'question' ? 1 : 0,
-      pointerEvents: stage === 'question' ? 'auto' : 'none',
-    }}
-  >
-    <FlowerQuestion
-      onSubmit={() => go('flowers')}
-      onStartMusic={startMusic}
-    />
-  </div>
-)}
-
-      {show('flowers') && (
-        <div
-          className="stage-layer"
-          style={{
-            opacity: stage === 'flowers' ? 1 : 0,
-            pointerEvents: stage === 'flowers' ? 'auto' : 'none',
-          }}
-        >
-          <FlowerStage onDone={() => go('letter')} />
-        </div>
-      )}
 
       {show('surprise') && (
         <div
@@ -109,7 +105,7 @@ export default function Page() {
           }}
         >
           <SurpriseStage
-            onJokesAside={() => {}}
+            onStartMusic={unlockMusic}
             onDone={() => go('jokes')}
           />
         </div>
@@ -123,7 +119,36 @@ export default function Page() {
             pointerEvents: stage === 'jokes' ? 'auto' : 'none',
           }}
         >
-          <JokesAsideStage onDone={() => go('question')} />
+          <JokesAsideStage
+            onStartMusic={startMusic}
+            onDone={() => go('question')}
+          />
+        </div>
+      )}
+
+      {show('question') && (
+        <div
+          className="stage-layer"
+          style={{
+            opacity: stage === 'question' ? 1 : 0,
+            pointerEvents: stage === 'question' ? 'auto' : 'none',
+          }}
+        >
+          <FlowerQuestion
+            onSubmit={() => go('flowers')}
+          />
+        </div>
+      )}
+
+      {show('flowers') && (
+        <div
+          className="stage-layer"
+          style={{
+            opacity: stage === 'flowers' ? 1 : 0,
+            pointerEvents: stage === 'flowers' ? 'auto' : 'none',
+          }}
+        >
+          <FlowerStage onDone={() => go('letter')} />
         </div>
       )}
 
@@ -135,7 +160,7 @@ export default function Page() {
             pointerEvents: stage === 'letter' ? 'auto' : 'none',
           }}
         >
-          <LetterStage onDone={() => {}} />
+          <LetterStage onDone={() => go('ending')} />
         </div>
       )}
 
